@@ -51,17 +51,22 @@ public class Base32Test {
         String sentence = "The quick brown fox jumps over the lazy dog.";
 
         String encodedSentence = Base32.encode(sentence);
+        String encodedSentenceWithChecksum = Base32.encodeWithChecksum(sentence);
 
         assertEquals("AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CHQPEBG", encodedSentence);
+        assertEquals("AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CHQPEBGM", encodedSentenceWithChecksum);
     }
 
     @Test
     void base32Test_decodeIntoSentence() {
         String encodedSentence = "AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CHQPEBG";
+        String encodedSentenceWithChecksum = "AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CHQPEBGM";
 
         String sentence = Base32.decode(encodedSentence);
+        String decodedChecksumSentence = Base32.decodeWithChecksum(encodedSentenceWithChecksum);
 
         assertEquals("The quick brown fox jumps over the lazy dog.", sentence);
+        assertEquals("The quick brown fox jumps over the lazy dog.", decodedChecksumSentence);
     }
 
     @Test

@@ -5,17 +5,16 @@ import java.util.Map;
 
 public class Base32 {
 
-    private static final String B32_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+    private static final String BASE32_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
     private static final int MASK_8BIT = 0xFF;
     private static final int MASK_5BIT = 0x1F;
     private static final int NUM_OF_BITS_IN_BASE32 = 5;
     private static final Map<String, Integer> B32_ALPHABET_INDEXES = new HashMap<>();
     private static final int CHECKSUM_MODULUS = 37;
-    private static final int BASE_32 = 32;
 
     static {
         int index = 0;
-        for (char ch : B32_ALPHABET.toCharArray()) {
+        for (char ch : BASE32_ALPHABET.toCharArray()) {
             B32_ALPHABET_INDEXES.put(String.valueOf(ch), index);
             index++;
         }
@@ -32,7 +31,7 @@ public class Base32 {
 
             while (numOfBitsRead >= NUM_OF_BITS_IN_BASE32) {
                 int chunk = (buffer >> (numOfBitsRead - NUM_OF_BITS_IN_BASE32)) & MASK_5BIT;
-                result.append(B32_ALPHABET.charAt(chunk));
+                result.append(getBase32Character(chunk));
                 numOfBitsRead -= NUM_OF_BITS_IN_BASE32;
             }
         }
@@ -40,7 +39,7 @@ public class Base32 {
         if (numOfBitsRead > 0) {
             int padding = NUM_OF_BITS_IN_BASE32 - numOfBitsRead;
             int chunk = (buffer << padding) & MASK_5BIT;
-            result.append(B32_ALPHABET.charAt(chunk));
+            result.append(getBase32Character(chunk));
         }
 
         return result.toString();
@@ -69,13 +68,18 @@ public class Base32 {
     public static String encodeWithChecksum(String input) {
         String encodedText = encode(input);
         int checksum = calculateChecksum(encodedText);
-        return encodedText + B32_ALPHABET.charAt(checksum);
+        return encodedText + getBase32Character(checksum);
+    }
+
+    public static String decodeWithChecksum(String input) {
+        //TODO: Verify checksum validity
+        return decode(input.substring(0, input.length() - 1));
     }
 
     private static int calculateChecksum(String encodedText) {
         int checksum = 0;
         for (char ch : encodedText.toCharArray()) {
-            checksum = (checksum * BASE_32 + B32_ALPHABET_INDEXES.get(String.valueOf(ch))) % CHECKSUM_MODULUS;
+            checksum = (checksum * 32 + B32_ALPHABET_INDEXES.get(String.valueOf(ch))) % CHECKSUM_MODULUS;
         }
         return checksum;
     }
@@ -87,6 +91,10 @@ public class Base32 {
             throw new IllegalStateException("Invalid Crockford Base32 character: " + codePointStringRepresentation);
         }
         return index;
+    }
+
+    private static char getBase32Character(int index) {
+        return BASE32_ALPHABET.charAt(index);
     }
 
 }
