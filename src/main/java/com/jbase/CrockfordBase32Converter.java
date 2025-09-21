@@ -3,13 +3,19 @@ package com.jbase;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Base32 {
+public class CrockfordBase32Converter implements Base32Converter {
 
     private static final String BASE32_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+    private static final String BASE32_ALPHABET_PLUS_CHECKSUM_SYMBOLS = "0123456789ABCDEFGHJKMNPQRSTVWXYZ*~$=U";
+
     private static final int MASK_8BIT = 0xFF;
+
     private static final int MASK_5BIT = 0x1F;
+
     private static final int NUM_OF_BITS_IN_BASE32 = 5;
+
     private static final Map<String, Integer> B32_ALPHABET_INDEXES = new HashMap<>();
+
     private static final int CHECKSUM_MODULUS = 37;
 
     static {
@@ -20,7 +26,7 @@ public class Base32 {
         }
     }
 
-    public static String encode(String input) {
+    private static String encode(String input) {
         int buffer = 0;
         int numOfBitsRead = 0;
         StringBuilder result = new StringBuilder();
@@ -45,7 +51,7 @@ public class Base32 {
         return result.toString();
     }
 
-    public static String decode(String input) {
+    private static String decode(String input) {
         int buffer = 0;
         int bitsRead = 0;
         StringBuilder result = new StringBuilder();
@@ -65,15 +71,34 @@ public class Base32 {
         return result.toString();
     }
 
-    public static String encodeWithChecksum(String input) {
+    private static String encodeWithChecksum(String input) {
         String encodedText = encode(input);
         int checksum = calculateChecksum(encodedText);
         return encodedText + getBase32Character(checksum);
     }
 
-    public static String decodeWithChecksum(String input) {
-        //TODO: Verify checksum validity
-        return decode(input.substring(0, input.length() - 1));
+    private static String decodeWithChecksum(String input) {
+        char receivedChecksumSymbol = input.charAt(input.length() - 1);
+
+        boolean valid = false;
+        for (var ch : BASE32_ALPHABET_PLUS_CHECKSUM_SYMBOLS.toCharArray()) {
+            if (ch == receivedChecksumSymbol) {
+                valid = true;
+                break;
+            }
+        }
+        if (!valid) {
+            throw new IllegalStateException("Invalid checksum symbol!");
+        }
+
+        String decodedString = decode(input.substring(0, input.length() - 1));
+
+        int currentChecksum = calculateChecksum(input.substring(0, input.length() - 1));
+        if (!(receivedChecksumSymbol == getBase32Character(currentChecksum))) {
+            throw new IllegalStateException("Invalid checksum value!");
+        }
+
+        return decodedString;
     }
 
     private static int calculateChecksum(String encodedText) {
@@ -97,4 +122,22 @@ public class Base32 {
         return BASE32_ALPHABET.charAt(index);
     }
 
+    private static String getNormalizedInput(String input) {
+        return input.toUpperCase();
+    }
+
+    @Override
+    public String encode(String input, Boolean doChecksum) {
+        if (doChecksum) return encodeWithChecksum(input);
+        return encode(input);
+    }
+
+    @Override
+    public String decode(String input, Boolean withChecksum) {
+        String normalized = getNormalizedInput(input);
+        if (withChecksum) {
+            return decodeWithChecksum(normalized);
+        }
+        return decode(normalized);
+    }
 }
