@@ -127,8 +127,10 @@ public class CrockfordBase32Converter implements Base32Converter {
     }
 
     @Override
-    public String encode(String input, Boolean doChecksum) {
-        if (doChecksum) return encodeWithChecksum(input);
+    public String encode(String input, Boolean withChecksum) {
+        if (withChecksum) {
+            return encodeWithChecksum(input);
+        }
         return encode(input);
     }
 
