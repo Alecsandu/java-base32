@@ -94,7 +94,7 @@ public class CrockfordBase32Converter implements Base32Converter {
         String decodedString = decode(input.substring(0, input.length() - 1));
 
         int currentChecksum = calculateChecksum(input.substring(0, input.length() - 1));
-        if (!(receivedChecksumSymbol == getBase32Character(currentChecksum))) {
+        if (!(receivedChecksumSymbol == getBase32CharacterChecksum(currentChecksum))) {
             throw new IllegalStateException("Invalid checksum value!");
         }
 

@@ -71,7 +71,7 @@ class CrockfordBase32ConverterTest {
     }
 
     @Test
-    void base32Test_decodeIntoSentence() {
+    void base32Test_decodeIntoSentenceWithChecksumSymbolFromDefaultAlphabet() {
         String encodedSentence = "AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CHQPEBG";
         String encodedSentenceWithValidChecksum = "AHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CHQPEBGM";
 
@@ -80,6 +80,18 @@ class CrockfordBase32ConverterTest {
 
         assertEquals("The quick brown fox jumps over the lazy dog.", sentence);
         assertEquals("The quick brown fox jumps over the lazy dog.", decodedChecksumSentence);
+    }
+
+    @Test
+    void base32Test_decodeIntoSentenceWithChecksumSymbolFromExtendedAlphabet() {
+        String encodedSentence = "EHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CHQPEBG";
+        String encodedSentenceWithValidChecksum = "EHM6A83HENMP6TS0C9S6YXVE41K6YY10D9TPTW3K41QQCSBJ41T6GS90DHGQMY90CHQPEBG*";
+
+        String sentence = crockfordBase32Converter.decode(encodedSentence, false);
+        String decodedChecksumSentence = crockfordBase32Converter.decode(encodedSentenceWithValidChecksum, true);
+
+        assertEquals("the quick brown fox jumps over the lazy dog.", sentence);
+        assertEquals("the quick brown fox jumps over the lazy dog.", decodedChecksumSentence);
     }
 
     @Test
