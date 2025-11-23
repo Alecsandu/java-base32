@@ -74,7 +74,7 @@ public class CrockfordBase32Converter implements Base32Converter {
     private static String encodeWithChecksum(String input) {
         String encodedText = encode(input);
         int checksum = calculateChecksum(encodedText);
-        return encodedText + getBase32Character(checksum);
+        return encodedText + getBase32CharacterChecksum(checksum);
     }
 
     private static String decodeWithChecksum(String input) {
@@ -120,6 +120,10 @@ public class CrockfordBase32Converter implements Base32Converter {
 
     private static char getBase32Character(int index) {
         return BASE32_ALPHABET.charAt(index);
+    }
+
+    private static char getBase32CharacterChecksum(int index) {
+        return BASE32_ALPHABET_PLUS_CHECKSUM_SYMBOLS.charAt(index);
     }
 
     private static String getNormalizedInput(String input) {
