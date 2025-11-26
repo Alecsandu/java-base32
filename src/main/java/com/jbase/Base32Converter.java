@@ -1,6 +1,6 @@
 package com.jbase;
 
-public interface Base32Converter {
+interface Base32Converter {
 
     String encode(String input, Boolean withChecksum);
 

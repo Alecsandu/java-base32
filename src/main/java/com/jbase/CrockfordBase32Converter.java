@@ -3,7 +3,7 @@ package com.jbase;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CrockfordBase32Converter implements Base32Converter {
+class CrockfordBase32Converter implements Base32Converter {
 
     private static final String BASE32_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
     private static final String BASE32_ALPHABET_PLUS_CHECKSUM_SYMBOLS = "0123456789ABCDEFGHJKMNPQRSTVWXYZ*~$=U";
